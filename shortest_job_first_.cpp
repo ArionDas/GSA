@@ -10,6 +10,7 @@ vector<vector<int>> resource_request;
 vector<vector<int>> uav_capacity;
 vector<vector<int>> round_trip_service_time(uavs, vector<int> (battle_clusters,0));
 vector<int> time_taken(battle_clusters,0);
+vector<pair<int,int>> time_required(battle_clusters);
 
 unordered_map<int,vector<int>> um;
 
@@ -30,6 +31,9 @@ void provide_resource_requests() {
         }
         resource_request.push_back(temp);
     }
+    // new_line;
+    // cout << "Resource requests exexcuted successfully";
+    // new_line;
 }
 
 void provide_uav_capacity() {
@@ -44,6 +48,9 @@ void provide_uav_capacity() {
         }
         uav_capacity.push_back(temp);
     }
+    // new_line;
+    // cout << "UAV capacity exexcuted successfully";
+    // new_line;
 }
 
 void get_round_trip_service_time() {
@@ -52,7 +59,9 @@ void get_round_trip_service_time() {
             round_trip_service_time[i][j] = generateRandomInt();
         }
     }
-    new_line;
+    // new_line;
+    // cout << "Round trip service time exexcuted successfully";
+    // new_line;
 }
 
 void print_resource_request() {
@@ -66,15 +75,34 @@ void print_resource_request() {
     new_line;
 }
 
-void first_come_first_serve() {
+void calculate_time_required() {
+    for(int i=0; i<uavs; i++) {
+        cout << "hey" << endl;
+        for(int j=0; j<battle_clusters; j++) {
+            time_required[j].first += round_trip_service_time[i][j];
+            time_required[j].second = j;
+            cout << "hi" << " ";
+        }
+    }
+    
+    // new_line;
+    // cout << "Time required calculated successfully";
+    // new_line;
+
+    sort(time_required.begin(),time_required.end());
+}
+
+void shortest_job_first() {
     /*
-    Providing the resources to battle clusters serially, as we need the request coming first to be executed first.
+    Tackling the places in a customized order to address the place taking the shortest time first.
     */
-    for(int i=0; i<battle_clusters; i++) {
+    cout << "Order of resolving the battle clusters : ";
+    for(int m=0; m<time_required.size(); m++) {
         //print_resource_request();
         bool flag = 0;
+        int i = time_required[m].second;
         int sum = accumulate(resource_request[i].begin(),resource_request[i].end(),0);
-
+        cout << i << " " << endl;
         while(sum>0) {
             for(int j=0; j<resources; j++) {
                 if(resource_request[i][j]==1) {
@@ -108,6 +136,7 @@ int main() {
     provide_resource_requests();
     provide_uav_capacity();
     get_round_trip_service_time();
+    calculate_time_required();
 
     print_resource_request();
 
@@ -117,10 +146,11 @@ int main() {
             cout << round_trip_service_time[i][j] << " ";
         new_line;
     }
+
     new_line;
-
-    first_come_first_serve();
-
+    shortest_job_first();
+    new_line;
+    
     for(int i=0; i<battle_clusters; i++) {
         cout << "Battle Cluster - " << i+1 << " : ";
         for(auto x:um[i]) {
@@ -133,27 +163,10 @@ int main() {
     for(int i=0; i<battle_clusters; i++) {
         cout << "Time taken by Battle Cluster - " << i+1 << " : " << time_taken[i] << endl;
     }
-
+    new_line;
     cout << "Maximum time required for a battle cluster is : " << *max_element(time_taken.begin(),time_taken.end());
     new_line;
 
     //print_resource_request();
     return 0;
 }
-
-/*
-
-INPUT:
-1 1 1 0 0 1 0 0
-1 1 0 0 1 0 0 1
-0 1 1 1 0 1 1 0
-0 0 1 1 1 1 1 1
-1 0 0 1 1 0 1 1
-0 0 1 1 0 0 0 1
-1 1 0 0 1 1 0 0
-0 1 0 1 1 1 0 1
-1 0 1 0 0 1 0 0
-1 1 0 1 1 1 0 1
-0 1 1 1 0 1 1 1
-
-*/

@@ -18,6 +18,11 @@ int generateRandomInt() {
     return y;
 }
 
+int get_random_decision() {
+    int y = rand() % 1;
+    return y;
+}
+
 void provide_resource_requests() {
     for(int i=0; i<battle_clusters; i++) {
         vector<int> temp;
@@ -66,35 +71,41 @@ void print_resource_request() {
     new_line;
 }
 
-void first_come_first_serve() {
+void random_iterations() {
     /*
-    Providing the resources to battle clusters serially, as we need the request coming first to be executed first.
+    Providing the resources randomly, as we need every iteration to be executed randomly.
     */
-    for(int i=0; i<battle_clusters; i++) {
+   unordered_map<int,int> clusters_map;
+    
+    while(clusters_map.size() < battle_clusters){
         //print_resource_request();
-        bool flag = 0;
+        int i = rand() % battle_clusters;
+        if(clusters_map.find(i)!=clusters_map.end())
+            continue;
+        
+        clusters_map[i] = 1;
         int sum = accumulate(resource_request[i].begin(),resource_request[i].end(),0);
 
+        unordered_map<int,int> uav_map;
+
         while(sum>0) {
+            bool flag = 0;
+            int k = rand() % uavs;
+            if(uav_map.find(k)!=uav_map.end())
+                continue;
+            uav_map[k] = 1;
+
             for(int j=0; j<resources; j++) {
                 if(resource_request[i][j]==1) {
-                    int k=0;
-                    for(; k<uavs; k++) {
-                        if(uav_capacity[k][j]==1) {
-                            um[i].push_back(k+1);
-                            resource_request[i][j] = 0;
-                            time_taken[i] += round_trip_service_time[k][i];
-                            break;
-                        }
-                    }
-                    if(k!=uavs) {
-                        for(; j<resources; j++) {
-                            if(resource_request[i][j]==1 && uav_capacity[k][j]==1) {
-                                resource_request[i][j] = 0;
-                            }
-                        }
+                    if(uav_capacity[k][j]==1) {
+                        resource_request[i][j] = 0;
+                        flag = 1;
                     }
                 }
+            }
+            if(flag) {
+                um[i].push_back(k+1);
+                time_taken[i] += round_trip_service_time[k][i];
             }
             sum = accumulate(resource_request[i].begin(),resource_request[i].end(),0);
         }
@@ -119,7 +130,7 @@ int main() {
     }
     new_line;
 
-    first_come_first_serve();
+    random_iterations();
 
     for(int i=0; i<battle_clusters; i++) {
         cout << "Battle Cluster - " << i+1 << " : ";
@@ -140,20 +151,3 @@ int main() {
     //print_resource_request();
     return 0;
 }
-
-/*
-
-INPUT:
-1 1 1 0 0 1 0 0
-1 1 0 0 1 0 0 1
-0 1 1 1 0 1 1 0
-0 0 1 1 1 1 1 1
-1 0 0 1 1 0 1 1
-0 0 1 1 0 0 0 1
-1 1 0 0 1 1 0 0
-0 1 0 1 1 1 0 1
-1 0 1 0 0 1 0 0
-1 1 0 1 1 1 0 1
-0 1 1 1 0 1 1 1
-
-*/

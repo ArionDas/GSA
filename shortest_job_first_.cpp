@@ -31,9 +31,6 @@ void provide_resource_requests() {
         }
         resource_request.push_back(temp);
     }
-    // new_line;
-    // cout << "Resource requests exexcuted successfully";
-    // new_line;
 }
 
 void provide_uav_capacity() {
@@ -48,9 +45,6 @@ void provide_uav_capacity() {
         }
         uav_capacity.push_back(temp);
     }
-    // new_line;
-    // cout << "UAV capacity exexcuted successfully";
-    // new_line;
 }
 
 void get_round_trip_service_time() {
@@ -59,9 +53,6 @@ void get_round_trip_service_time() {
             round_trip_service_time[i][j] = generateRandomInt();
         }
     }
-    // new_line;
-    // cout << "Round trip service time exexcuted successfully";
-    // new_line;
 }
 
 void print_resource_request() {
@@ -81,14 +72,9 @@ void calculate_time_required() {
         for(int j=0; j<battle_clusters; j++) {
             time_required[j].first += round_trip_service_time[i][j];
             time_required[j].second = j;
-            cout << "hi" << " ";
+            //cout << "hi" << " ";
         }
     }
-    
-    // new_line;
-    // cout << "Time required calculated successfully";
-    // new_line;
-
     sort(time_required.begin(),time_required.end());
 }
 
